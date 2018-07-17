@@ -517,7 +517,11 @@ def create_request_cls(base, task, pool, hostname, eventer,
             if (self.expires or task_id in revoked_tasks) and self.revoked():
                 raise TaskRevokedError(task_id)
 
-            time_limit, soft_time_limit = self.time_limits
+            if not self.time_limits:
+                time_limit = default_time_limit 
+                soft_time_limit = default_soft_time_limit
+            else:
+                time_limit, soft_time_limit = self.time_limits
             result = apply_async(
                 trace,
                 args=(self.type, task_id, self.request_dict, self.body,
